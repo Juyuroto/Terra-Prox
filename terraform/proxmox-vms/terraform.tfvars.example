@@ -1,0 +1,16 @@
+# --- Connexion à l'API Proxmox ---
+pm_api_url          = "https://IP_DU_NOEUD:8006/api2/json"
+pm_api_token_id     = "utilisateur@pve!nom-du-token"
+pm_api_token_secret = "TON_SECRET_ICI"
+
+# --- VM à créer ---
+vm_name       = "NOM_DE_LA_VM"
+target_node   = "NOM_DU_NOEUD" # ex : pve4
+template_name = "NOM_DU_TEMPLATE" # nom exact du template dans Proxmox
+storage       = "NOM_DU_STOCKAGE" # ex : VM-Storage
+memory        = 2048 # en Mo
+cores         = 2
+disk_size     = "40G" # >= taille du disque du template
+ip            = "192.168.X.X"
+gateway       = "192.168.X.1"
+ci_user       = "NOM_UTILISATEUR"
