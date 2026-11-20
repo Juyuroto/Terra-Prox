@@ -1,15 +1,15 @@
 variable "pm_api_token_secret" {
-  type      = string
+  type = string
   sensitive = true
 }
 
 variable "pm_api_url" {
-  type        = string
+  type = string
   description = "URL de l'API Proxmox"
 }
 
 variable "pm_api_token_id" {
-  type        = string
+  type = string
   description = "ID du token API (utilisateur@realm!nom)"
 }
 
@@ -17,9 +17,14 @@ variable "vm_name" {
   type = string 
 }
 
+variable "vmid" {
+  type = number
+  description = "ID de la VM dans Proxmox"
+}
+
 variable "target_node" { 
   type = string
-  default = "pve4" 
+  default = "pve" 
 }
 
 variable "template_name" { 
@@ -58,5 +63,5 @@ variable "gateway" {
 
 variable "ci_user" { 
   type = string
-  default = "alain" 
+  default = "user" 
 }
