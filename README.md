@@ -1,5 +1,13 @@
 # HomeLab Infra as Code — Terraform
 
+> **Avant tout :** copie le fichier de variables d'exemple et remplis-le avec tes valeurs.
+>
+> ```bash
+> cp terraform/proxmox-vms/terraform.tfvars.example terraform/proxmox-vms/terraform.tfvars
+> ```
+>
+> Sans `terraform.tfvars`, Terraform te demande chaque variable à la main. Le fichier est ignoré par git : ton token n'est jamais versionné.
+
 Automatisation de la création des VM sur mon cluster Proxmox via Terraform, plutôt que de les créer manuellement dans l'interface web à chaque fois.
 
 ## Contexte
@@ -26,7 +34,8 @@ PC Admin (Debian) → terraform apply → API Proxmox (port 8006) → création/
 ├── proxmox-vms/
 │   ├── main.tf              # définition des VM
 │   ├── variables.tf         # déclaration des variables
-│   ├── terraform.tfvars     # valeurs réelles (jamais versionné)
+│   ├── terraform.tfvars         # valeurs réelles (jamais versionné)
+│   ├── terraform.tfvars.example # modèle à copier
 │   └── providers.tf         # configuration du provider Proxmox
 └── Autre-Projet/            # dossier dédié à un autre projet
 ```
@@ -56,13 +65,53 @@ terraform.tfvars
 
 Le fichier `.tfstate` contient l'état actuel de l'infrastructure gérée par Terraform (parfois avec des données sensibles en clair) — à traiter avec la même prudence qu'un secret.
 
-## Utilisation
+## Utilisation — lancer Terraform de A à Z
 
-Le contenu détaillé des fichiers `.tf` est disponible dans le dépôt du projet. Le fonctionnement général :
+### Prérequis
 
-1. **`terraform init`** — initialise le projet et télécharge le provider Proxmox
-2. **`terraform plan`** — affiche ce qui va être créé/modifié/supprimé, sans rien appliquer
-3. **`terraform apply`** — applique réellement les changements après confirmation
+- Terraform installé sur le PC Admin (`terraform version` doit répondre).
+- Un token API Proxmox (voir étapes 3 et 4 plus bas).
+- Un template Proxmox prêt à être cloné, avec cloud-init (étape 1).
+- Une clé SSH publique en `~/.ssh/id_ed25519.pub` : `main.tf` l'injecte dans la VM. Absente, génère-la avec `ssh-keygen -t ed25519`.
+
+### Commandes
+
+```bash
+# 1. Aller dans le dossier du projet
+cd terraform/proxmox-vms
+
+# 2. Créer le fichier de variables, puis le remplir (voir « Avant tout »)
+cp terraform.tfvars.example terraform.tfvars
+nano terraform.tfvars
+
+# 3. Télécharger le provider Proxmox
+terraform init
+
+# 4. Vérifier la syntaxe
+terraform validate
+
+# 5. Voir ce qui va être créé, sans rien appliquer
+terraform plan
+
+# 6. Créer la VM (taper « yes » pour confirmer)
+terraform apply
+```
+
+### Vérification
+
+La VM apparaît dans l'interface Proxmox, puis répond en SSH avec les valeurs `ci_user` et `ip` de ton `terraform.tfvars` :
+
+```bash
+ssh <ci_user>@<ip>
+```
+
+### Modifier ou supprimer la VM
+
+Change une valeur dans `terraform.tfvars` ou `main.tf`, puis relance `terraform plan` et `terraform apply`. Pour supprimer la VM :
+
+```bash
+terraform destroy
+```
 
 ## Étapes réalisées
 
